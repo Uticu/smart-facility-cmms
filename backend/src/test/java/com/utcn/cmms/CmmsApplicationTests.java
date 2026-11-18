@@ -1,4 +1,4 @@
-package test.java.com.utcn.cmms;
+package com.utcn.cmms;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

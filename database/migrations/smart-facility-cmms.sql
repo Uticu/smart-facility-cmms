@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS payments;
 DROP TABLE IF EXISTS resource_reservations;
+DROP TABLE IF EXISTS tickets;
 DROP TABLE IF EXISTS user_roles;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS roles;
@@ -65,6 +66,33 @@ CREATE TABLE allocatable_resources(
     resource_type VARCHAR(50) NOT NULL
 );
 
+CREATE TABLE tickets (
+     id INT AUTO_INCREMENT PRIMARY KEY,
+     title VARCHAR(150) NOT NULL,
+     description TEXT NOT NULL,
+     status VARCHAR(30) NOT NULL DEFAULT 'REPORTED',
+     priority VARCHAR(20) NOT NULL,
+
+     client_id INT NOT NULL,
+     technician_id INT NULL,
+     asset_id INT NOT NULL,
+
+     sla_deadline TIMESTAMP NULL,
+     labor_hours DECIMAL(5, 2) NULL,
+     completion_notes TEXT NULL,
+     reason_of_rejection TEXT NULL,
+
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+     CONSTRAINT fk_tickets_client FOREIGN KEY (client_id) REFERENCES users(id) ON DELETE RESTRICT,
+     CONSTRAINT fk_tickets_technician FOREIGN KEY (technician_id) REFERENCES users(id) ON DELETE SET NULL,
+     CONSTRAINT fk_tickets_asset FOREIGN KEY (asset_id) REFERENCES assets(id) ON DELETE RESTRICT,
+
+     INDEX idx_tickets_status (status),
+     INDEX idx_tickets_sla (sla_deadline)
+);
+
 CREATE TABLE resource_reservations(
     id INT AUTO_INCREMENT PRIMARY KEY,
     resource_id INT NOT NULL,
@@ -75,7 +103,11 @@ CREATE TABLE resource_reservations(
 
     CONSTRAINT fk_resource_reservations_allocatable_resources
         FOREIGN KEY (resource_id) REFERENCES allocatable_resources(id)
-        ON DELETE RESTICT,
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_resource_reservations_tickets
+        FOREIGN KEY (ticket_id) REFERENCES tickets(id)
+        ON DELETE CASCADE,
 
     INDEX idx_resource_interval (resource_id, start_time, end_time)
 );

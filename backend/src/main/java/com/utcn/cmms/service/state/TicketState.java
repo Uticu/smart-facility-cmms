@@ -36,6 +36,5 @@ public interface TicketState {
     }
     default void closed(Ticket ticket){
         throw new InvalidStateTransitionException("Cannot switch to CLOSED state from state: " + ticket.getStatus());
-
     }
 }

@@ -114,11 +114,15 @@ CREATE TABLE resource_reservations(
 
 CREATE TABLE payments(
     id INT AUTO_INCREMENT PRIMARY KEY,
-    ticket_id INT NOT NULL, --Wait for 'Tickets' table to link
+    ticket_id INT NOT NULL,
     stripe_payment_intent_id VARCHAR(255) UNIQUE,
     amount DECIMAL(10, 2) NOT NULL,
     currency VARCHAR(10) NOT NULL DEFAULT 'RON',
     status VARCHAR(30) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    paid_at TIMESTAMP
+    paid_at TIMESTAMP,
+
+    CONSTRAINT fk_payments_tickets
+    FOREIGN KEY (ticket_id) REFERENCES tickets(id)
+    ON DELETE RESTRICT
 );
